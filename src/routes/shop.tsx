@@ -1,0 +1,126 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { ChevronDown, CircleUserRound, Menu, Search, ShoppingBag, X } from "lucide-react";
+import { useMemo, useState } from "react";
+
+import productsImage from "@/assets/arcchive-products.jpg";
+
+export const Route = createFileRoute("/shop")({
+  head: () => ({
+    meta: [
+      { title: "Shop Curated Clothing — ARCCHIVE XI" },
+      { name: "description", content: "Shop ARCCHIVE XI's current edit of limited clothing sourced from independent makers across China." },
+      { property: "og:title", content: "Shop Curated Clothing — ARCCHIVE XI" },
+      { property: "og:description", content: "Explore considered silhouettes and limited sourced pieces." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: ShopPage,
+});
+
+type Product = {
+  name: string;
+  price: number;
+  category: "Outerwear" | "Tops" | "Bottoms";
+  soldOut: boolean;
+  image: number;
+};
+
+const catalog: Product[] = [
+  { name: "Washed Utility Jacket", price: 118, category: "Outerwear", soldOut: false, image: 0 },
+  { name: "Structured Knit Pullover", price: 84, category: "Tops", soldOut: true, image: 1 },
+  { name: "Multi-Pocket Wide Trouser", price: 96, category: "Bottoms", soldOut: false, image: 2 },
+  { name: "Faded Weight Hoodie", price: 78, category: "Tops", soldOut: true, image: 3 },
+  { name: "Raw Hem Work Jacket", price: 126, category: "Outerwear", soldOut: false, image: 0 },
+  { name: "Undyed Knit Set", price: 102, category: "Tops", soldOut: false, image: 1 },
+  { name: "Double Cargo Trouser", price: 108, category: "Bottoms", soldOut: false, image: 2 },
+  { name: "Ash Oversized Hoodie", price: 82, category: "Tops", soldOut: false, image: 3 },
+  { name: "Charcoal Zip Blouson", price: 132, category: "Outerwear", soldOut: true, image: 0 },
+  { name: "Cloud Rib Pullover", price: 88, category: "Tops", soldOut: false, image: 1 },
+  { name: "Utility Volume Pant", price: 112, category: "Bottoms", soldOut: false, image: 2 },
+  { name: "Heavy Wash Hood", price: 86, category: "Tops", soldOut: false, image: 3 },
+];
+
+function Mark() {
+  return <span className="xi-mark" aria-hidden="true"><span>XI</span></span>;
+}
+
+function ProductImage({ product }: { product: Product }) {
+  return (
+    <div className={`product-crop product-crop-${product.image}`}>
+      <img src={productsImage} alt={product.name} width={1920} height={1200} loading="lazy" />
+    </div>
+  );
+}
+
+function ShopPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [category, setCategory] = useState("All");
+  const [availability, setAvailability] = useState("All");
+  const [price, setPrice] = useState("All");
+  const [sort, setSort] = useState("Featured");
+  const [visible, setVisible] = useState(8);
+
+  const products = useMemo(() => {
+    const filtered = catalog.filter((product) => {
+      const categoryMatch = category === "All" || product.category === category;
+      const availabilityMatch = availability === "All" || (availability === "In stock" ? !product.soldOut : product.soldOut);
+      const priceMatch = price === "All" || (price === "Under $90" ? product.price < 90 : product.price >= 90);
+      return categoryMatch && availabilityMatch && priceMatch;
+    });
+    return [...filtered].sort((a, b) => sort === "Price low" ? a.price - b.price : sort === "Price high" ? b.price - a.price : 0);
+  }, [availability, category, price, sort]);
+
+  return (
+    <main className="shop-page min-h-screen bg-background text-foreground">
+      <header className="bg-background">
+        <div className="utility-bar">
+          <button className="utility-select" type="button">USD / US <ChevronDown size={12} /></button>
+          <p>COMPLIMENTARY SHIPPING OVER $150</p>
+          <div className="header-icons"><a href="#search" aria-label="Search"><Search /></a><a href="#account" aria-label="Account"><CircleUserRound /></a><a href="#cart" aria-label="Shopping bag"><ShoppingBag /></a></div>
+        </div>
+        <div className="brand-row">
+          <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
+          <Link className="brand-lockup" to="/" aria-label="ARCCHIVE XI home"><Mark /><span>ARCCHIVE</span></Link>
+          <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
+        </div>
+        <nav className={menuOpen ? "primary-nav primary-nav-open" : "primary-nav"} aria-label="Main navigation">
+          <Link to="/">Home</Link><Link to="/shop" activeProps={{ className: "nav-active" }}>Shop</Link><Link to="/" hash="story">About us</Link><Link to="/" hash="contact">Contact</Link>
+        </nav>
+      </header>
+
+      <section className="collection-head">
+        <p>Current collection</p>
+        <h1>Shop all</h1>
+        <span>{products.length} pieces</span>
+      </section>
+
+      <section className="filter-bar" aria-label="Product filters">
+        <div className="filter-group">
+          <label>Category<select value={category} onChange={(event) => { setCategory(event.target.value); setVisible(8); }}><option>All</option><option>Outerwear</option><option>Tops</option><option>Bottoms</option></select></label>
+          <label>Size<select defaultValue="All"><option>All</option><option>XS</option><option>S</option><option>M</option><option>L</option><option>XL</option></select></label>
+          <label>Price<select value={price} onChange={(event) => { setPrice(event.target.value); setVisible(8); }}><option>All</option><option>Under $90</option><option>$90 and over</option></select></label>
+          <label>Availability<select value={availability} onChange={(event) => { setAvailability(event.target.value); setVisible(8); }}><option>All</option><option>In stock</option><option>Sold out</option></select></label>
+        </div>
+        <label className="sort-control">Sort by<select value={sort} onChange={(event) => setSort(event.target.value)}><option>Featured</option><option>Price low</option><option>Price high</option></select></label>
+      </section>
+
+      <section className="collection-body" aria-live="polite">
+        {products.length ? <div className="product-grid shop-grid">
+          {products.slice(0, visible).map((product, index) => (
+            <article className="product-card" key={`${product.name}-${index}`}>
+              {product.name === "Washed Utility Jacket" ? <Link to="/products/washed-utility-jacket" aria-label={`View ${product.name}`}>
+                <div className="product-media"><ProductImage product={product} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
+                <div className="product-info"><h2>{product.name}</h2><p>${product.price.toFixed(2)}</p></div>
+              </Link> : <a href="#collection" aria-label={`View ${product.name}`}>
+                <div className="product-media"><ProductImage product={product} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
+                <div className="product-info"><h2>{product.name}</h2><p>${product.price.toFixed(2)}</p></div>
+              </a>}
+            </article>
+          ))}
+        </div> : <p className="empty-results">No pieces match these filters.</p>}
+        {visible < products.length && <button className="load-more" type="button" onClick={() => setVisible((count) => count + 4)}>Load more <span>{visible} / {products.length}</span></button>}
+      </section>
+    </main>
+  );
+}
