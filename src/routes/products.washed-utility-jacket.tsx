@@ -22,21 +22,23 @@ export const Route = createFileRoute("/products/washed-utility-jacket")({
   component: ProductDetailPage,
 });
 
+const galleryMedia = [productsImage, productsImage, productsImage, productsImage];
+
 const relatedProducts = [
-  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true, image: 1 },
-  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false, image: 2 },
-  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true, image: 3 },
-  { name: "Raw Hem Work Jacket", price: "$126.00", soldOut: false, image: 0 },
+  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true, image: productsImage },
+  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false, image: productsImage },
+  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true, image: productsImage },
+  { name: "Raw Hem Work Jacket", price: "$126.00", soldOut: false, image: productsImage },
 ];
 
 function Mark() {
   return <span className="xi-mark" aria-hidden="true"><span>XI</span></span>;
 }
 
-function ProductCrop({ index, name, eager = false }: { index: number; name: string; eager?: boolean }) {
+function ProductMedia({ src, alt, eager = false }: { src: string; alt: string; eager?: boolean }) {
   return (
-    <div className={`product-crop product-crop-${index}`}>
-      <img src={productsImage} alt={name} width={1920} height={1200} loading={eager ? "eager" : "lazy"} />
+    <div className="product-crop">
+      <img src={src} alt={alt} width={900} height={1200} loading={eager ? "eager" : "lazy"} />
     </div>
   );
 }
@@ -72,11 +74,11 @@ function ProductDetailPage() {
 
       <div className="product-detail">
         <section className="product-gallery" aria-label="Washed Utility Jacket images">
-          <div className="product-main-image"><ProductCrop index={activeImage} name={`Washed Utility Jacket view ${activeImage + 1}`} eager /></div>
+          <div className="product-main-image"><ProductMedia src={galleryMedia[activeImage]} alt={`Washed Utility Jacket view ${activeImage + 1}`} eager /></div>
           <div className="product-thumbnails" aria-label="Choose product image">
-            {[0, 1, 2, 3].map((index) => (
-              <button key={index} type="button" className={activeImage === index ? "product-thumbnail product-thumbnail-active" : "product-thumbnail"} onClick={() => setActiveImage(index)} aria-label={`Show image ${index + 1}`} aria-pressed={activeImage === index}>
-                <ProductCrop index={index} name="" />
+            {galleryMedia.map((src, index) => (
+              <button key={`${src}-${index}`} type="button" className={activeImage === index ? "product-thumbnail product-thumbnail-active" : "product-thumbnail"} onClick={() => setActiveImage(index)} aria-label={`Show image ${index + 1}`} aria-pressed={activeImage === index}>
+                <ProductMedia src={src} alt="" />
               </button>
             ))}
           </div>
@@ -117,7 +119,7 @@ function ProductDetailPage() {
           {relatedProducts.map((product) => (
             <article className="product-card" key={product.name}>
               <Link to="/shop" aria-label={`View ${product.name}`}>
-                <div className="product-media"><ProductCrop index={product.image} name={product.name} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
+                <div className="product-media"><ProductMedia src={product.image} alt={product.name} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
                 <div className="product-info"><h3>{product.name}</h3><p>{product.price}</p></div>
               </Link>
             </article>

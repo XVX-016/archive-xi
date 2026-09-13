@@ -23,33 +23,62 @@ type Product = {
   price: number;
   category: "Outerwear" | "Tops" | "Bottoms";
   soldOut: boolean;
-  image: number;
+  image: string;
+  video?: string;
+  slug?: string;
 };
 
 const catalog: Product[] = [
-  { name: "Washed Utility Jacket", price: 118, category: "Outerwear", soldOut: false, image: 0 },
-  { name: "Structured Knit Pullover", price: 84, category: "Tops", soldOut: true, image: 1 },
-  { name: "Multi-Pocket Wide Trouser", price: 96, category: "Bottoms", soldOut: false, image: 2 },
-  { name: "Faded Weight Hoodie", price: 78, category: "Tops", soldOut: true, image: 3 },
-  { name: "Raw Hem Work Jacket", price: 126, category: "Outerwear", soldOut: false, image: 0 },
-  { name: "Undyed Knit Set", price: 102, category: "Tops", soldOut: false, image: 1 },
-  { name: "Double Cargo Trouser", price: 108, category: "Bottoms", soldOut: false, image: 2 },
-  { name: "Ash Oversized Hoodie", price: 82, category: "Tops", soldOut: false, image: 3 },
-  { name: "Charcoal Zip Blouson", price: 132, category: "Outerwear", soldOut: true, image: 0 },
-  { name: "Cloud Rib Pullover", price: 88, category: "Tops", soldOut: false, image: 1 },
-  { name: "Utility Volume Pant", price: 112, category: "Bottoms", soldOut: false, image: 2 },
-  { name: "Heavy Wash Hood", price: 86, category: "Tops", soldOut: false, image: 3 },
+  { name: "Washed Utility Jacket", price: 118, category: "Outerwear", soldOut: false, image: productsImage, slug: "washed-utility-jacket" },
+  { name: "Structured Knit Pullover", price: 84, category: "Tops", soldOut: true, image: productsImage },
+  { name: "Multi-Pocket Wide Trouser", price: 96, category: "Bottoms", soldOut: false, image: productsImage },
+  { name: "Faded Weight Hoodie", price: 78, category: "Tops", soldOut: true, image: productsImage },
+  { name: "Raw Hem Work Jacket", price: 126, category: "Outerwear", soldOut: false, image: productsImage },
+  { name: "Undyed Knit Set", price: 102, category: "Tops", soldOut: false, image: productsImage },
+  { name: "Double Cargo Trouser", price: 108, category: "Bottoms", soldOut: false, image: productsImage },
+  { name: "Ash Oversized Hoodie", price: 82, category: "Tops", soldOut: false, image: productsImage },
+  { name: "Charcoal Zip Blouson", price: 132, category: "Outerwear", soldOut: true, image: productsImage },
+  { name: "Cloud Rib Pullover", price: 88, category: "Tops", soldOut: false, image: productsImage },
+  { name: "Utility Volume Pant", price: 112, category: "Bottoms", soldOut: false, image: productsImage },
+  { name: "Heavy Wash Hood", price: 86, category: "Tops", soldOut: false, image: productsImage },
 ];
 
 function Mark() {
   return <span className="xi-mark" aria-hidden="true"><span>XI</span></span>;
 }
 
-function ProductImage({ product }: { product: Product }) {
+function ProductCard({ product }: { product: Product }) {
+  const content = (
+    <>
+      <div className="product-media">
+        <div className="product-crop">
+          {product.video ? (
+            <video src={product.video} aria-label={product.name} width={900} height={1200} muted playsInline loop autoPlay />
+          ) : (
+            <img src={product.image} alt={product.name} width={900} height={1200} loading="lazy" />
+          )}
+        </div>
+        {product.soldOut && <span className="sold-badge">Sold out</span>}
+      </div>
+      <div className="product-info">
+        <h2>{product.name}</h2>
+        <p>${product.price.toFixed(2)}</p>
+      </div>
+    </>
+  );
+
   return (
-    <div className={`product-crop product-crop-${product.image}`}>
-      <img src={productsImage} alt={product.name} width={1920} height={1200} loading="lazy" />
-    </div>
+    <article className="product-card">
+      {product.slug ? (
+        <Link to={`/products/${product.slug}` as "/products/washed-utility-jacket"} aria-label={`View ${product.name}`}>
+          {content}
+        </Link>
+      ) : (
+        <a href="#collection" aria-label={`View ${product.name}`}>
+          {content}
+        </a>
+      )}
+    </article>
   );
 }
 
@@ -108,15 +137,7 @@ function ShopPage() {
       <section className="collection-body" aria-live="polite">
         {products.length ? <div className="product-grid shop-grid">
           {products.slice(0, visible).map((product, index) => (
-            <article className="product-card" key={`${product.name}-${index}`}>
-              {product.name === "Washed Utility Jacket" ? <Link to="/products/washed-utility-jacket" aria-label={`View ${product.name}`}>
-                <div className="product-media"><ProductImage product={product} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
-                <div className="product-info"><h2>{product.name}</h2><p>${product.price.toFixed(2)}</p></div>
-              </Link> : <a href="#collection" aria-label={`View ${product.name}`}>
-                <div className="product-media"><ProductImage product={product} />{product.soldOut && <span className="sold-badge">Sold out</span>}</div>
-                <div className="product-info"><h2>{product.name}</h2><p>${product.price.toFixed(2)}</p></div>
-              </a>}
-            </article>
+            <ProductCard product={product} key={`${product.name}-${index}`} />
           ))}
         </div> : <p className="empty-results">No pieces match these filters.</p>}
         {visible < products.length && <button className="load-more" type="button" onClick={() => setVisible((count) => count + 4)}>Load more <span>{visible} / {products.length}</span></button>}

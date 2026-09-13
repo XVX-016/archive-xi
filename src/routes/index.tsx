@@ -11,12 +11,15 @@ import {
   ShoppingBag,
   X,
 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 import concreteImage from "@/assets/arcchive-concrete.jpg";
 import heroImage from "@/assets/arcchive-hero.jpg";
 import productsImage from "@/assets/arcchive-products.jpg";
-import socialImage from "@/assets/arcchive-social.jpg";
+import wornByLook1 from "@/assets/worn-by/look-1.jpg";
+import wornByLook2 from "@/assets/worn-by/look-2.jpg";
+import wornByLook3 from "@/assets/worn-by/look-3.jpg";
+import wornByLook4 from "@/assets/worn-by/look-4.mp4";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -38,11 +41,35 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const products = [
-  { name: "Washed Utility Jacket", price: "$118.00", soldOut: false },
-  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true },
-  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false },
-  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true },
+type Product = {
+  name: string;
+  price: string;
+  soldOut: boolean;
+  image: string;
+  video?: string;
+  slug?: string;
+};
+
+type WornByItem = {
+  type: "image" | "video";
+  src: string;
+  poster?: string;
+  handle: string;
+  alt: string;
+};
+
+const products: Product[] = [
+  { name: "Washed Utility Jacket", price: "$118.00", soldOut: false, image: productsImage, slug: "washed-utility-jacket" },
+  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true, image: productsImage },
+  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false, image: productsImage },
+  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true, image: productsImage },
+];
+
+const wornByLooks: WornByItem[] = [
+  { type: "image", src: wornByLook1, handle: "arcchivexi", alt: "ARCCHIVE XI look worn by @arcchivexi" },
+  { type: "image", src: wornByLook2, handle: "studio.north", alt: "ARCCHIVE XI look worn by @studio.north" },
+  { type: "image", src: wornByLook3, handle: "mina.walks", alt: "ARCCHIVE XI look worn by @mina.walks" },
+  { type: "video", src: wornByLook4, poster: wornByLook3, handle: "kai.in.layer", alt: "ARCCHIVE XI look worn by @kai.in.layer" },
 ];
 
 function Mark({ large = false }: { large?: boolean }) {
@@ -53,26 +80,87 @@ function Mark({ large = false }: { large?: boolean }) {
   );
 }
 
-function ProductImage({ index, name }: { index: number; name: string }) {
+function ItemMedia({ image, video, alt, width, height }: { image?: string; video?: string | undefined; alt: string; width: number; height: number }) {
+  if (video) {
+    return <video src={video} aria-label={alt} width={width} height={height} muted playsInline loop autoPlay />;
+  }
+
+  return <img src={image} alt={alt} width={width} height={height} loading="lazy" />;
+}
+
+function ProductCard({ product }: { product: Product }) {
+  const content = (
+    <>
+      <div className="product-media">
+        <div className="product-crop">
+          <ItemMedia image={product.image} video={product.video} alt={product.name} width={900} height={1200} />
+        </div>
+        {product.soldOut && <span className="sold-badge">Sold out</span>}
+      </div>
+      <div className="product-info">
+        <h3>{product.name}</h3>
+        <p>{product.price}</p>
+      </div>
+    </>
+  );
+
   return (
-    <div className={`product-crop product-crop-${index}`}>
-      <img src={productsImage} alt={name} width={1920} height={1200} loading="lazy" />
-    </div>
+    <article className="product-card">
+      {product.slug ? (
+        <Link to={`/products/${product.slug}` as "/products/washed-utility-jacket"} aria-label={`View ${product.name}`}>
+          {content}
+        </Link>
+      ) : (
+        <a href="#new" aria-label={`View ${product.name}`}>
+          {content}
+        </a>
+      )}
+    </article>
   );
 }
 
-function SocialImage({ index }: { index: number }) {
+function WornByCard({ look }: { look: WornByItem }) {
+  const [controls, setControls] = useState(false);
+  const profileHref = `https://www.instagram.com/${look.handle}/`;
+
   return (
-    <a className={`social-crop social-crop-${index}`} href="#follow" aria-label={`View community look ${index + 1}`}>
-      <img src={socialImage} alt={`ARCCHIVE XI community look ${index + 1}`} width={1920} height={640} loading="lazy" />
-      <span className="social-overlay"><Instagram size={20} strokeWidth={1.5} /></span>
-    </a>
+    <article className="social-crop" onMouseEnter={() => setControls(true)} onMouseLeave={() => setControls(false)}>
+      {look.type === "video" ? (
+        <video src={look.src} poster={look.poster} aria-label={look.alt} width={800} height={800} muted autoPlay loop playsInline preload="metadata" controls={controls} />
+      ) : (
+        <img src={look.src} alt={look.alt} width={800} height={800} loading="lazy" />
+      )}
+      <span className="social-overlay">
+        <a href={profileHref} aria-label={`View @${look.handle} on Instagram`}>
+          <Instagram size={20} strokeWidth={1.5} />
+          <span>@{look.handle}</span>
+        </a>
+      </span>
+    </article>
   );
 }
 
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
+  const [pastHero, setPastHero] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const updateHeader = () => {
+      const hero = heroRef.current;
+      const desktop = window.matchMedia("(min-width: 761px)").matches;
+      setPastHero(Boolean(desktop && hero && window.scrollY >= hero.offsetHeight));
+    };
+
+    updateHeader();
+    window.addEventListener("scroll", updateHeader, { passive: true });
+    window.addEventListener("resize", updateHeader);
+    return () => {
+      window.removeEventListener("scroll", updateHeader);
+      window.removeEventListener("resize", updateHeader);
+    };
+  }, []);
 
   const subscribe = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -81,7 +169,7 @@ function Index() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="bg-background">
+      <header className={pastHero ? "site-header site-header-solid" : "site-header"}>
         <div className="utility-bar">
           <button className="utility-select" type="button">USD / US <ChevronDown size={12} /></button>
           <p>COMPLIMENTARY SHIPPING OVER $150</p>
@@ -110,7 +198,7 @@ function Index() {
         </nav>
       </header>
 
-      <section id="top" className="hero">
+      <section id="top" className="hero" ref={heroRef}>
         <img src={heroImage} alt="Model wearing the ARCCHIVE XI seasonal edit" width={1920} height={1200} fetchPriority="high" />
         <div className="hero-shade" />
         <div className="hero-copy">
@@ -126,29 +214,7 @@ function Index() {
           <h2>New arrivals</h2>
         </div>
         <div className="product-grid">
-          {products.map((product, index) => (
-            <article className="product-card" key={product.name}>
-              {index === 0 ? <Link to="/products/washed-utility-jacket" aria-label={`View ${product.name}`}>
-                <div className="product-media">
-                  <ProductImage index={index} name={product.name} />
-                  {product.soldOut && <span className="sold-badge">Sold out</span>}
-                </div>
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  <p>{product.price}</p>
-                </div>
-              </Link> : <a href="#new" aria-label={`View ${product.name}`}>
-                <div className="product-media">
-                  <ProductImage index={index} name={product.name} />
-                  {product.soldOut && <span className="sold-badge">Sold out</span>}
-                </div>
-                <div className="product-info">
-                  <h3>{product.name}</h3>
-                  <p>{product.price}</p>
-                </div>
-              </a>}
-            </article>
-          ))}
+          {products.map((product) => <ProductCard product={product} key={product.name} />)}
         </div>
         <Link to="/shop" className="view-all">View all pieces <span aria-hidden="true">→</span></Link>
       </section>
@@ -158,7 +224,7 @@ function Index() {
           <h2 id="community-title">Worn by you</h2>
           <a href="#follow">@ARCCHIVEXI</a>
         </div>
-        <div className="social-grid">{[0, 1, 2, 3].map((index) => <SocialImage index={index} key={index} />)}</div>
+        <div className="social-grid">{wornByLooks.map((look) => <WornByCard look={look} key={look.handle} />)}</div>
       </section>
 
       <section id="story" className="story-section">
