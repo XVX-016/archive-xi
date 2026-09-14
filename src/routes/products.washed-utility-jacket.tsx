@@ -1,11 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CircleUserRound, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
+import { Minus, Plus } from "lucide-react";
 import { useState } from "react";
 
 import productsImage from "@/assets/2.jpg";
-import xiMark from "@/assets/xi-mark.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { SiteHeader } from "@/components/SiteHeader";
+import { useCart } from "@/lib/cart-context";
 
 export const Route = createFileRoute("/products/washed-utility-jacket")({
   head: () => ({
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/products/washed-utility-jacket")({
   component: ProductDetailPage,
 });
 
-const galleryMedia = [productsImage, productsImage, productsImage, productsImage];
+const galleryMedia: string[] = [productsImage, productsImage, productsImage, productsImage];
 
 const relatedProducts = [
   { name: "Structured Knit Pullover", price: "₹6,900", soldOut: true, image: productsImage },
@@ -41,39 +42,32 @@ function ProductMedia({ src, alt, eager = false }: { src: string; alt: string; e
 }
 
 function ProductDetailPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [activeImage, setActiveImage] = useState(0);
   const [size, setSize] = useState("M");
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const { addItem, openDrawer } = useCart();
 
   const addToCart = () => {
+    addItem({
+      product_id: "washed-utility-jacket", // static; real product_id comes from DB
+      name: "Washed Utility Jacket",
+      price: 980000, // 9,800 rupees in paise
+      image: productsImage,
+      quantity,
+      slug: "washed-utility-jacket",
+    });
     setAdded(true);
+    openDrawer();
   };
 
   return (
     <main className="product-page min-h-screen bg-background text-foreground">
-      <header className="bg-background">
-        <div className="utility-bar">
-          <p>COMPLIMENTARY ALL-INDIA SHIPPING OVER ₹12,000 · DELIVERED IN 3–5 WEEKS</p>
-          <div className="header-icons"><a href="#search" aria-label="Search"><Search /></a><a href="#account" aria-label="Account"><CircleUserRound /></a><a href="#cart" aria-label="Shopping bag"><ShoppingBag /></a></div>
-        </div>
-        <div className="brand-row">
-          <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
-          <Link className="brand-lockup" to="/" aria-label="ARCHIVE XI home">
-            <span>ARCHIVE</span>
-            <img className="brand-lockup-mark" src={xiMark} alt="" width={44} height={44} />
-          </Link>
-          <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
-        </div>
-        <nav className={menuOpen ? "primary-nav primary-nav-open" : "primary-nav"} aria-label="Main navigation">
-          <Link to="/">Home</Link><Link to="/shop">Shop</Link><Link to="/" hash="story">About us</Link><Link to="/" hash="contact">Contact</Link>
-        </nav>
-      </header>
+      <SiteHeader activeNav="shop" />
 
       <div className="product-detail">
         <section className="product-gallery" aria-label="Washed Utility Jacket images">
-          <div className="product-main-image"><ProductMedia src={galleryMedia[activeImage]} alt={`Washed Utility Jacket view ${activeImage + 1}`} eager /></div>
+          <div className="product-main-image"><ProductMedia src={galleryMedia[activeImage] ?? productsImage} alt={`Washed Utility Jacket view ${activeImage + 1}`} eager /></div>
           <div className="product-thumbnails" aria-label="Choose product image">
             {galleryMedia.map((src, index) => (
               <button key={`${src}-${index}`} type="button" className={activeImage === index ? "product-thumbnail product-thumbnail-active" : "product-thumbnail"} onClick={() => setActiveImage(index)} aria-label={`Show image ${index + 1}`} aria-pressed={activeImage === index}>

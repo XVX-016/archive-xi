@@ -1,17 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ChevronLeft,
-  ChevronRight,
-  CircleUserRound,
-  Headphones,
-  LockKeyhole,
-  Menu,
-  Search,
-  ShieldCheck,
-  ShoppingBag,
-  Truck,
-  X,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Headphones, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
 import { useRef, useState, type FormEvent } from "react";
 
 import wornImg1 from "@/assets/worn-by/1.png";
@@ -24,6 +12,9 @@ import heroImage from "@/assets/2.jpg";
 import storyImage from "@/assets/3.jpg";
 import productsImage from "@/assets/2.jpg";
 import xiMark from "@/assets/xi-mark.png";
+import { SiteHeader } from "@/components/SiteHeader";
+
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -203,7 +194,6 @@ function WornByCard({ look }: { look: WornByLook }) {
 }
 
 function Index() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -221,33 +211,7 @@ function Index() {
 
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className="site-header">
-        <div className="utility-bar">
-          <p>COMPLIMENTARY ALL-INDIA SHIPPING OVER ₹12,000 · DELIVERED IN 3–5 WEEKS</p>
-          <div className="header-icons">
-            <a href="#search" aria-label="Search"><Search /></a>
-            <a href="#account" aria-label="Account"><CircleUserRound /></a>
-            <a href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
-          </div>
-        </div>
-
-        <div className="brand-row">
-          <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">
-            {menuOpen ? <X /> : <Menu />}
-          </button>
-          <a className="brand-lockup" href="#top" aria-label="ARCHIVE XI home">
-            <span>ARCHIVE</span>
-            <img className="brand-lockup-mark" src={xiMark} alt="" width={44} height={44} />
-          </a>
-          <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
-        </div>
-        <nav className={menuOpen ? "primary-nav primary-nav-open" : "primary-nav"} aria-label="Main navigation">
-          <a href="#top">Home</a>
-          <Link to="/shop">Shop</Link>
-          <a href="#story">About us</a>
-          <a href="#contact">Contact</a>
-        </nav>
-      </header>
+      <SiteHeader activeNav="home" />
 
       <section id="top" className="hero">
         <img src={heroImage} alt="Model wearing the ARCHIVE XI seasonal edit" width={1920} height={1200} fetchPriority="high" />

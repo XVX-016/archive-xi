@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CircleUserRound, Menu, Search, ShoppingBag, X } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import productsImage from "@/assets/2.jpg";
-import xiMark from "@/assets/xi-mark.png";
+import { SiteHeader } from "@/components/SiteHeader";
 
 export const Route = createFileRoute("/shop")({
   head: () => ({
@@ -81,7 +80,6 @@ function ProductCard({ product }: { product: Product }) {
 }
 
 function ShopPage() {
-  const [menuOpen, setMenuOpen] = useState(false);
   const [category, setCategory] = useState("All");
   const [availability, setAvailability] = useState("All");
   const [price, setPrice] = useState("All");
@@ -100,23 +98,7 @@ function ShopPage() {
 
   return (
     <main className="shop-page min-h-screen bg-background text-foreground">
-      <header className="bg-background">
-        <div className="utility-bar">
-          <p>COMPLIMENTARY ALL-INDIA SHIPPING OVER ₹12,000 · DELIVERED IN 3–5 WEEKS</p>
-          <div className="header-icons"><a href="#search" aria-label="Search"><Search /></a><a href="#account" aria-label="Account"><CircleUserRound /></a><a href="#cart" aria-label="Shopping bag"><ShoppingBag /></a></div>
-        </div>
-        <div className="brand-row">
-          <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
-          <Link className="brand-lockup" to="/" aria-label="ARCHIVE XI home">
-            <span>ARCHIVE</span>
-            <img className="brand-lockup-mark" src={xiMark} alt="" width={44} height={44} />
-          </Link>
-          <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
-        </div>
-        <nav className={menuOpen ? "primary-nav primary-nav-open" : "primary-nav"} aria-label="Main navigation">
-          <Link to="/">Home</Link><Link to="/shop" activeProps={{ className: "nav-active" }}>Shop</Link><Link to="/" hash="story">About us</Link><Link to="/" hash="contact">Contact</Link>
-        </nav>
-      </header>
+      <SiteHeader activeNav="shop" />
 
       <section className="collection-head">
         <p>Current collection</p>
