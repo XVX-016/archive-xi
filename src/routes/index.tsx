@@ -1,35 +1,39 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CircleUserRound,
   Headphones,
-  Instagram,
   LockKeyhole,
   Menu,
   Search,
   ShieldCheck,
   ShoppingBag,
+  Truck,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useRef, useState, type FormEvent } from "react";
 
-import concreteImage from "@/assets/arcchive-concrete.jpg";
-import heroImage from "@/assets/arcchive-hero.jpg";
-import productsImage from "@/assets/arcchive-products.jpg";
-import wornByLook1 from "@/assets/worn-by/look-1.jpg";
-import wornByLook2 from "@/assets/worn-by/look-2.jpg";
-import wornByLook3 from "@/assets/worn-by/look-3.jpg";
-import wornByLook4 from "@/assets/worn-by/look-4.mp4";
+import wornImg1 from "@/assets/worn-by/1.png";
+import wornImg2 from "@/assets/worn-by/2.png";
+import wornImg3 from "@/assets/worn-by/3.png";
+import wornImg4 from "@/assets/worn-by/4.png";
+import wornImg5 from "@/assets/worn-by/5.png";
+import wornImg6 from "@/assets/worn-by/6.png";
+import heroImage from "@/assets/2.jpg";
+import storyImage from "@/assets/3.jpg";
+import productsImage from "@/assets/2.jpg";
+import xiMark from "@/assets/xi-mark.png";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ARCCHIVE XI — Curated Clothing" },
+      { title: "ARCHIVE XI — Curated Clothing" },
       {
         name: "description",
-        content: "ARCCHIVE XI sources considered clothing and hard-to-find pieces from independent makers across China.",
+        content: "ARCHIVE XI sources considered clothing and hard-to-find pieces from independent makers across China.",
       },
-      { property: "og:title", content: "ARCCHIVE XI — Curated Clothing" },
+      { property: "og:title", content: "ARCHIVE XI — Curated Clothing" },
       {
         property: "og:description",
         content: "Considered silhouettes, sourced in limited numbers.",
@@ -50,33 +54,94 @@ type Product = {
   slug?: string;
 };
 
-type WornByItem = {
-  type: "image" | "video";
-  src: string;
-  poster?: string;
+type WornByLook = {
+  image: string;
   handle: string;
-  alt: string;
+  location: string;
+  quote: string;
+  rating: number;
 };
 
 const products: Product[] = [
-  { name: "Washed Utility Jacket", price: "$118.00", soldOut: false, image: productsImage, slug: "washed-utility-jacket" },
-  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true, image: productsImage },
-  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false, image: productsImage },
-  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true, image: productsImage },
+  { name: "Washed Utility Jacket", price: "₹9,800", soldOut: false, image: productsImage, slug: "washed-utility-jacket" },
+  { name: "Structured Knit Pullover", price: "₹6,900", soldOut: true, image: productsImage },
+  { name: "Multi-Pocket Wide Trouser", price: "₹7,900", soldOut: false, image: productsImage },
+  { name: "Faded Weight Hoodie", price: "₹6,500", soldOut: true, image: productsImage },
 ];
 
-const wornByLooks: WornByItem[] = [
-  { type: "image", src: wornByLook1, handle: "arcchivexi", alt: "ARCCHIVE XI look worn by @arcchivexi" },
-  { type: "image", src: wornByLook2, handle: "studio.north", alt: "ARCCHIVE XI look worn by @studio.north" },
-  { type: "image", src: wornByLook3, handle: "mina.walks", alt: "ARCCHIVE XI look worn by @mina.walks" },
-  { type: "video", src: wornByLook4, poster: wornByLook3, handle: "kai.in.layer", alt: "ARCCHIVE XI look worn by @kai.in.layer" },
+const wornByLooks: WornByLook[] = [
+  {
+    image: wornImg1,
+    handle: "@kai.in.layer",
+    location: "Mumbai",
+    rating: 5,
+    quote: "The silhouette is unmatched. Structured shoulders with a drape that holds its shape.",
+  },
+  {
+    image: wornImg2,
+    handle: "@studio.north",
+    location: "Delhi",
+    rating: 4.5,
+    quote: "Clean cuts, durable stitching, and great proportion. Fits slightly oversized as noted.",
+  },
+  {
+    image: wornImg3,
+    handle: "@mina.walks",
+    location: "Bangalore",
+    rating: 5,
+    quote: "Understated minimalism at its best. The wash gives it that authentic archival feel.",
+  },
+  {
+    image: wornImg4,
+    handle: "@arjun.m",
+    location: "Pune",
+    rating: 4.5,
+    quote: "Quality well above high-street alternatives. Arrived safely with all duties handled.",
+  },
+  {
+    image: wornImg5,
+    handle: "@priya.k",
+    location: "Hyderabad",
+    rating: 5,
+    quote: "Subtle details make this piece stand out. Heavy, comfortable, and easy to layer.",
+  },
+  {
+    image: wornImg6,
+    handle: "@dev.r",
+    location: "Jaipur",
+    rating: 4.5,
+    quote: "Worth every day of the freight wait. Sizing is spot on and the fit is remarkable.",
+  },
 ];
 
-function Mark({ large = false }: { large?: boolean }) {
+function Stars({ rating }: { rating: number }) {
   return (
-    <span className={large ? "xi-mark xi-mark-large" : "xi-mark"} aria-hidden="true">
-      <span>XI</span>
-    </span>
+    <div className="worn-by-stars" aria-label={`${rating} out of 5 stars`}>
+      {[1, 2, 3, 4, 5].map((starIndex) => {
+        const isFull = rating >= starIndex;
+        const isHalf = !isFull && rating >= starIndex - 0.5;
+
+        return (
+          <span key={starIndex} className="star-wrapper">
+            <svg className="star-icon star-empty" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+            </svg>
+            {isFull && (
+              <svg className="star-icon star-full" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+              </svg>
+            )}
+            {isHalf && (
+              <span className="star-half-wrap">
+                <svg className="star-icon star-full" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+              </span>
+            )}
+          </span>
+        );
+      })}
+    </div>
   );
 }
 
@@ -119,23 +184,20 @@ function ProductCard({ product }: { product: Product }) {
   );
 }
 
-function WornByCard({ look }: { look: WornByItem }) {
-  const [controls, setControls] = useState(false);
-  const profileHref = `https://www.instagram.com/${look.handle}/`;
-
+function WornByCard({ look }: { look: WornByLook }) {
   return (
-    <article className="social-crop" onMouseEnter={() => setControls(true)} onMouseLeave={() => setControls(false)}>
-      {look.type === "video" ? (
-        <video src={look.src} poster={look.poster} aria-label={look.alt} width={800} height={800} muted autoPlay loop playsInline preload="metadata" controls={controls} />
-      ) : (
-        <img src={look.src} alt={look.alt} width={800} height={800} loading="lazy" />
-      )}
-      <span className="social-overlay">
-        <a href={profileHref} aria-label={`View @${look.handle} on Instagram`}>
-          <Instagram size={20} strokeWidth={1.5} />
-          <span>@{look.handle}</span>
-        </a>
-      </span>
+    <article className="worn-by-card">
+      <div className="worn-by-photo">
+        <img src={look.image} alt="ARCHIVE XI look" width={640} height={800} loading="lazy" />
+      </div>
+      <div className="worn-by-content">
+        <div className="worn-by-meta">
+          <Stars rating={look.rating} />
+        </div>
+        <blockquote className="worn-by-quote">
+          <p>"{look.quote}"</p>
+        </blockquote>
+      </div>
     </article>
   );
 }
@@ -143,36 +205,25 @@ function WornByCard({ look }: { look: WornByItem }) {
 function Index() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [subscribed, setSubscribed] = useState(false);
-  const [pastHero, setPastHero] = useState(false);
-  const heroRef = useRef<HTMLElement>(null);
-
-  useEffect(() => {
-    const updateHeader = () => {
-      const hero = heroRef.current;
-      const desktop = window.matchMedia("(min-width: 761px)").matches;
-      setPastHero(Boolean(desktop && hero && window.scrollY >= hero.offsetHeight));
-    };
-
-    updateHeader();
-    window.addEventListener("scroll", updateHeader, { passive: true });
-    window.addEventListener("resize", updateHeader);
-    return () => {
-      window.removeEventListener("scroll", updateHeader);
-      window.removeEventListener("resize", updateHeader);
-    };
-  }, []);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   const subscribe = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSubscribed(true);
   };
 
+  const scrollLooks = (dir: -1 | 1) => {
+    if (!trackRef.current) return;
+    const card = trackRef.current.querySelector<HTMLElement>(".worn-by-card");
+    const step = card ? card.offsetWidth + 20 : 320;
+    trackRef.current.scrollBy({ left: dir * step, behavior: "smooth" });
+  };
+
   return (
     <main className="min-h-screen bg-background text-foreground">
-      <header className={pastHero ? "site-header site-header-solid" : "site-header"}>
+      <header className="site-header">
         <div className="utility-bar">
-          <button className="utility-select" type="button">USD / US <ChevronDown size={12} /></button>
-          <p>COMPLIMENTARY SHIPPING OVER $150</p>
+          <p>COMPLIMENTARY ALL-INDIA SHIPPING OVER ₹12,000 · DELIVERED IN 3–5 WEEKS</p>
           <div className="header-icons">
             <a href="#search" aria-label="Search"><Search /></a>
             <a href="#account" aria-label="Account"><CircleUserRound /></a>
@@ -184,9 +235,9 @@ function Index() {
           <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">
             {menuOpen ? <X /> : <Menu />}
           </button>
-          <a className="brand-lockup" href="#top" aria-label="ARCCHIVE XI home">
-            <Mark />
-            <span>ARCCHIVE</span>
+          <a className="brand-lockup" href="#top" aria-label="ARCHIVE XI home">
+            <span>ARCHIVE</span>
+            <img className="brand-lockup-mark" src={xiMark} alt="" width={44} height={44} />
           </a>
           <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
         </div>
@@ -198,8 +249,8 @@ function Index() {
         </nav>
       </header>
 
-      <section id="top" className="hero" ref={heroRef}>
-        <img src={heroImage} alt="Model wearing the ARCCHIVE XI seasonal edit" width={1920} height={1200} fetchPriority="high" />
+      <section id="top" className="hero">
+        <img src={heroImage} alt="Model wearing the ARCHIVE XI seasonal edit" width={1920} height={1200} fetchPriority="high" />
         <div className="hero-shade" />
         <div className="hero-copy">
           <p>Edition 01 · Autumn / Winter</p>
@@ -221,40 +272,69 @@ function Index() {
 
       <section aria-labelledby="community-title" className="community-section">
         <div className="community-heading">
-          <h2 id="community-title">Worn by you</h2>
-          <a href="#follow">@ARCCHIVEXI</a>
+          <div>
+            <p className="community-eyebrow">Customer styling & reviews</p>
+            <h2 id="community-title">Worn by you</h2>
+          </div>
+          <a href="#follow">@ARCHIVEXI</a>
         </div>
-        <div className="social-grid">{wornByLooks.map((look) => <WornByCard look={look} key={look.handle} />)}</div>
+        <div className="worn-by-track-wrapper">
+          <button
+            className="worn-by-arrow worn-by-arrow-prev"
+            type="button"
+            onClick={() => scrollLooks(-1)}
+            aria-label="Scroll looks left"
+          >
+            <ChevronLeft size={18} strokeWidth={1.5} />
+          </button>
+          <div className="worn-by-track" ref={trackRef} role="list">
+            {wornByLooks.map((look) => (
+              <div role="listitem" key={look.handle} className="worn-by-slide">
+                <WornByCard look={look} />
+              </div>
+            ))}
+          </div>
+          <button
+            className="worn-by-arrow worn-by-arrow-next"
+            type="button"
+            onClick={() => scrollLooks(1)}
+            aria-label="Scroll looks right"
+          >
+            <ChevronRight size={18} strokeWidth={1.5} />
+          </button>
+        </div>
       </section>
 
-      <section id="story" className="story-section">
+      <section id="story" className="story-section" aria-label="About ARCHIVE XI">
         <div className="story-image">
-          <img src={concreteImage} alt="Raw concrete texture" width={1200} height={1200} loading="lazy" />
-          <Mark large />
+          <img src={storyImage} alt="Raw concrete interior" width={1200} height={1200} loading="lazy" />
+          <img className="xi-mark-large" src={xiMark} alt="" width={300} height={300} />
         </div>
         <div className="story-copy">
           <p className="story-kicker">The source</p>
           <h2>Found, not fabricated.</h2>
-          <p>ARCCHIVE XI is a considered edit of clothing sourced from independent makers and specialist suppliers across China.</p>
+          <p>ARCHIVE XI is a considered edit of clothing sourced from independent makers and specialist suppliers across China.</p>
           <p>We choose for construction, silhouette and staying power—then release each piece in limited numbers. No manufactured mythology. Just good clothes, found with intent.</p>
           <a href="#story">Our approach <span aria-hidden="true">→</span></a>
         </div>
       </section>
 
+
       <section className="trust-row" aria-label="Shopping assurances">
+        <div><Truck /><span><strong>All-India delivery</strong><small>3–5 weeks sourced freight timeline</small></span></div>
         <div><LockKeyhole /><span><strong>Secure checkout</strong><small>Your details stay protected</small></span></div>
         <div><Headphones /><span><strong>Personal service</strong><small>Real help, when you need it</small></span></div>
-        <div><ShieldCheck /><span><strong>Trusted payments</strong><small>Major payment methods accepted</small></span></div>
+        <div><ShieldCheck /><span><strong>Trusted payments</strong><small>UPI, cards & netbanking</small></span></div>
       </section>
 
       <footer id="contact" className="site-footer">
         <div className="footer-grid">
-          <div className="footer-brand"><div className="brand-lockup footer-lockup"><Mark /><span>ARCCHIVE</span></div><p>Curated clothing.<br />Sourced with intent.</p></div>
+          <div className="footer-brand"><div className="brand-lockup footer-lockup"><span>ARCHIVE</span><img className="brand-lockup-mark" src={xiMark} alt="" width={36} height={36} /></div><p>Curated clothing.<br />Sourced with intent across China.<br />Delivered India-wide in 3–5 weeks.</p></div>
           <div><h2>Explore</h2><Link to="/shop">Shop</Link><Link to="/shop">New arrivals</Link><a href="#story">About us</a></div>
-          <div id="follow"><h2>Follow us</h2><a href="#instagram">Instagram</a><a href="#tiktok">TikTok</a><a href="mailto:hello@arcchivexi.com">hello@arcchivexi.com</a></div>
+          <div id="follow"><h2>Follow us</h2><a href="#instagram">Instagram</a><a href="#tiktok">TikTok</a><a href="mailto:hello@archivexi.com">hello@archivexi.com</a></div>
           <div className="newsletter"><h2>Stay in the loop</h2><p>First access to new edits and limited restocks.</p>{subscribed ? <p className="success">You're on the list.</p> : <form onSubmit={subscribe}><label className="sr-only" htmlFor="email">Email address</label><input id="email" type="email" required placeholder="EMAIL ADDRESS" /><button type="submit" aria-label="Subscribe">→</button></form>}</div>
         </div>
-        <div className="footer-bottom"><p>© 2026 ARCCHIVE XI</p><div><a href="#privacy">Privacy</a><a href="#terms">Terms</a></div></div>
+        <div className="footer-bottom"><p>© 2026 ARCHIVE XI · Sourced Freight: All orders ship directly to India in 3–5 weeks with all import duties handled.</p><div><a href="#privacy">Privacy</a><a href="#terms">Terms & Shipping</a></div></div>
       </footer>
     </main>
   );

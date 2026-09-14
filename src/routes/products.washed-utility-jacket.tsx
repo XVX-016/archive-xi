@@ -1,17 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ChevronDown, CircleUserRound, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
+import { CircleUserRound, Menu, Minus, Plus, Search, ShoppingBag, X } from "lucide-react";
 import { useState } from "react";
 
-import productsImage from "@/assets/arcchive-products.jpg";
+import productsImage from "@/assets/2.jpg";
+import xiMark from "@/assets/xi-mark.png";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/products/washed-utility-jacket")({
   head: () => ({
     meta: [
-      { title: "Washed Utility Jacket — ARCCHIVE XI" },
-      { name: "description", content: "Discover the Washed Utility Jacket, a structured cotton layer sourced by ARCCHIVE XI in Guangzhou." },
-      { property: "og:title", content: "Washed Utility Jacket — ARCCHIVE XI" },
+      { title: "Washed Utility Jacket — ARCHIVE XI" },
+      { name: "description", content: "Discover the Washed Utility Jacket, a structured cotton layer sourced by ARCHIVE XI in Guangzhou." },
+      { property: "og:title", content: "Washed Utility Jacket — ARCHIVE XI" },
       { property: "og:description", content: "A limited structured cotton layer, sourced for its softened finish and relaxed fit." },
       { property: "og:type", content: "product" },
       { property: "og:url", content: "https://arc-xi-threads.lovable.app/products/washed-utility-jacket" },
@@ -25,15 +26,11 @@ export const Route = createFileRoute("/products/washed-utility-jacket")({
 const galleryMedia = [productsImage, productsImage, productsImage, productsImage];
 
 const relatedProducts = [
-  { name: "Structured Knit Pullover", price: "$84.00", soldOut: true, image: productsImage },
-  { name: "Multi-Pocket Wide Trouser", price: "$96.00", soldOut: false, image: productsImage },
-  { name: "Faded Weight Hoodie", price: "$78.00", soldOut: true, image: productsImage },
-  { name: "Raw Hem Work Jacket", price: "$126.00", soldOut: false, image: productsImage },
+  { name: "Structured Knit Pullover", price: "₹6,900", soldOut: true, image: productsImage },
+  { name: "Multi-Pocket Wide Trouser", price: "₹7,900", soldOut: false, image: productsImage },
+  { name: "Faded Weight Hoodie", price: "₹6,500", soldOut: true, image: productsImage },
+  { name: "Raw Hem Work Jacket", price: "₹10,500", soldOut: false, image: productsImage },
 ];
-
-function Mark() {
-  return <span className="xi-mark" aria-hidden="true"><span>XI</span></span>;
-}
 
 function ProductMedia({ src, alt, eager = false }: { src: string; alt: string; eager?: boolean }) {
   return (
@@ -58,13 +55,15 @@ function ProductDetailPage() {
     <main className="product-page min-h-screen bg-background text-foreground">
       <header className="bg-background">
         <div className="utility-bar">
-          <button className="utility-select" type="button">USD / US <ChevronDown size={12} /></button>
-          <p>COMPLIMENTARY SHIPPING OVER $150</p>
+          <p>COMPLIMENTARY ALL-INDIA SHIPPING OVER ₹12,000 · DELIVERED IN 3–5 WEEKS</p>
           <div className="header-icons"><a href="#search" aria-label="Search"><Search /></a><a href="#account" aria-label="Account"><CircleUserRound /></a><a href="#cart" aria-label="Shopping bag"><ShoppingBag /></a></div>
         </div>
         <div className="brand-row">
           <button className="mobile-menu" type="button" onClick={() => setMenuOpen((open) => !open)} aria-label="Toggle menu">{menuOpen ? <X /> : <Menu />}</button>
-          <Link className="brand-lockup" to="/" aria-label="ARCCHIVE XI home"><Mark /><span>ARCCHIVE</span></Link>
+          <Link className="brand-lockup" to="/" aria-label="ARCHIVE XI home">
+            <span>ARCHIVE</span>
+            <img className="brand-lockup-mark" src={xiMark} alt="" width={44} height={44} />
+          </Link>
           <a className="mobile-bag" href="#cart" aria-label="Shopping bag"><ShoppingBag /></a>
         </div>
         <nav className={menuOpen ? "primary-nav primary-nav-open" : "primary-nav"} aria-label="Main navigation">
@@ -87,7 +86,7 @@ function ProductDetailPage() {
         <section className="product-summary" aria-labelledby="product-title">
           <p className="product-kicker">Sourced edit · No. 01</p>
           <h1 id="product-title">Washed Utility Jacket</h1>
-          <p className="product-price">$118.00</p>
+          <p className="product-price">₹9,800</p>
           <p className="product-description">Sourced in Guangzhou from a small independent maker, this structured utility jacket is cut from washed midweight cotton. A relaxed, slightly cropped fit and softened finish make it an easy everyday layer; each piece has subtle tonal variation from the wash process.</p>
 
           <fieldset className="size-selector">
@@ -106,7 +105,7 @@ function ProductDetailPage() {
           <p className="cart-status" aria-live="polite">{added ? `${quantity} × size ${size} added to your bag.` : ""}</p>
 
           <Accordion className="product-accordion" type="single" collapsible>
-            <AccordionItem value="shipping"><AccordionTrigger>Shipping</AccordionTrigger><AccordionContent>Orders are dispatched within 2–3 business days. Complimentary tracked shipping applies to orders over $150.</AccordionContent></AccordionItem>
+            <AccordionItem value="shipping"><AccordionTrigger>Shipping</AccordionTrigger><AccordionContent>All orders ship directly from our suppliers in China and are delivered India-wide in 3–5 weeks. All import duties are handled by us. Complimentary shipping on orders over ₹12,000.</AccordionContent></AccordionItem>
             <AccordionItem value="returns"><AccordionTrigger>Returns</AccordionTrigger><AccordionContent>Unworn pieces may be returned within 14 days of delivery, with original tags attached. Return shipping is deducted from the refund.</AccordionContent></AccordionItem>
             <AccordionItem value="details"><AccordionTrigger>Fabric and care</AccordionTrigger><AccordionContent>100% cotton shell. Cold wash separately and air dry to preserve the washed finish.</AccordionContent></AccordionItem>
           </Accordion>
