@@ -20,6 +20,7 @@ src/routeTree.gen.ts
 # Wrangler / Cloudflare
 .wrangler/
 .dev.vars
+.env
 
 # Editor directories and files
 .vscode/*
