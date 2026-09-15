@@ -113,10 +113,18 @@ export function SiteHeader({ activeNav }: SiteHeaderProps) {
         >
           Shop
         </Link>
-        <Link to="/" hash="story" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/about"
+          className={activeNav === "about" ? "nav-active" : undefined}
+          onClick={() => setMenuOpen(false)}
+        >
           About us
         </Link>
-        <Link to="/" hash="contact" onClick={() => setMenuOpen(false)}>
+        <Link
+          to="/contact"
+          className={activeNav === "contact" ? "nav-active" : undefined}
+          onClick={() => setMenuOpen(false)}
+        >
           Contact
         </Link>
       </nav>

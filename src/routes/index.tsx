@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Headphones, LockKeyhole, ShieldCheck, Truck } from "lucide-react";
-import { useRef, useState, type FormEvent } from "react";
+import { useRef } from "react";
 
 import wornImg1 from "@/assets/worn-by/1.png";
 import wornImg2 from "@/assets/worn-by/2.png";
@@ -12,6 +12,7 @@ import heroImage from "@/assets/2.jpg";
 import storyImage from "@/assets/3.jpg";
 import productsImage from "@/assets/2.jpg";
 import xiMark from "@/assets/xi-mark.png";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
 
@@ -194,13 +195,7 @@ function WornByCard({ look }: { look: WornByLook }) {
 }
 
 function Index() {
-  const [subscribed, setSubscribed] = useState(false);
   const trackRef = useRef<HTMLDivElement>(null);
-
-  const subscribe = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setSubscribed(true);
-  };
 
   const scrollLooks = (dir: -1 | 1) => {
     if (!trackRef.current) return;
@@ -291,15 +286,7 @@ function Index() {
         <div><ShieldCheck /><span><strong>Trusted payments</strong><small>UPI, cards & netbanking</small></span></div>
       </section>
 
-      <footer id="contact" className="site-footer">
-        <div className="footer-grid">
-          <div className="footer-brand"><div className="brand-lockup footer-lockup"><span>ARCHIVE</span><img className="brand-lockup-mark" src={xiMark} alt="" width={36} height={36} /></div><p>Curated clothing.<br />Sourced with intent across China.<br />Delivered India-wide in 3–5 weeks.</p></div>
-          <div><h2>Explore</h2><Link to="/shop">Shop</Link><Link to="/shop">New arrivals</Link><a href="#story">About us</a></div>
-          <div id="follow"><h2>Follow us</h2><a href="#instagram">Instagram</a><a href="#tiktok">TikTok</a><a href="mailto:hello@archivexi.com">hello@archivexi.com</a></div>
-          <div className="newsletter"><h2>Stay in the loop</h2><p>First access to new edits and limited restocks.</p>{subscribed ? <p className="success">You're on the list.</p> : <form onSubmit={subscribe}><label className="sr-only" htmlFor="email">Email address</label><input id="email" type="email" required placeholder="EMAIL ADDRESS" /><button type="submit" aria-label="Subscribe">→</button></form>}</div>
-        </div>
-        <div className="footer-bottom"><p>© 2026 ARCHIVE XI · Sourced Freight: All orders ship directly to India in 3–5 weeks with all import duties handled.</p><div><a href="#privacy">Privacy</a><a href="#terms">Terms & Shipping</a></div></div>
-      </footer>
+      <SiteFooter />
     </main>
   );
 }

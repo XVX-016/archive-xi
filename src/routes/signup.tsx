@@ -199,13 +199,13 @@ function SignupPage() {
 
         <p className="auth-legal">
           By creating an account you agree to our{" "}
-          <a href="#terms" className="auth-link">
+          <Link to="/terms" className="auth-link">
             Terms
-          </a>{" "}
+          </Link>{" "}
           and{" "}
-          <a href="#privacy" className="auth-link">
+          <Link to="/privacy" className="auth-link">
             Privacy Policy
-          </a>
+          </Link>
           .
         </p>
 

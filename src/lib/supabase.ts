@@ -1,19 +1,36 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] as string;
-const supabaseAnonKey = import.meta.env["VITE_SUPABASE_ANON_KEY"] as string;
+const supabaseUrl = import.meta.env["VITE_SUPABASE_URL"] as string | undefined;
+const supabaseAnonKey = import.meta.env["VITE_SUPABASE_ANON_KEY"] as string | undefined;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables.",
-  );
+export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+
+let client: SupabaseClient | null = null;
+
+export function getSupabase(): SupabaseClient {
+  if (!supabaseUrl || !supabaseAnonKey) {
+    throw new Error(
+      "Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables. " +
+        "Copy .env.example to .env and add your Supabase project credentials.",
+    );
+  }
+
+  client ??= createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true,
+    },
+  });
+
+  return client;
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true, // handles magic-link token in the URL
+/** @deprecated Prefer getSupabase() — kept for minimal call-site churn */
+export const supabase = new Proxy({} as SupabaseClient, {
+  get(_target, prop) {
+    const value = getSupabase()[prop as keyof SupabaseClient];
+    return typeof value === "function" ? value.bind(getSupabase()) : value;
   },
 });
 
@@ -71,4 +88,12 @@ export type ShippingAddress = {
   city: string;
   state: string;
   pincode: string;
+};
+
+export type ContactMessage = {
+  id: string;
+  name: string;
+  email: string;
+  message: string;
+  submitted_at: string;
 };

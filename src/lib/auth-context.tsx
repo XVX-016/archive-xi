@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { supabase } from "./supabase";
+import { getSupabase, isSupabaseConfigured } from "./supabase";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -30,6 +30,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setLoading(false);
+      return;
+    }
+
+    const supabase = getSupabase();
+
     // 1. Read existing session on mount (handles page refresh)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -51,7 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signOut = useCallback(async () => {
-    await supabase.auth.signOut();
+    if (!isSupabaseConfigured) return;
+    await getSupabase().auth.signOut();
   }, []);
 
   return (
